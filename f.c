@@ -18,8 +18,24 @@ bit* e(bit* R){
     return permute(32, R, 48, permutation);
 }
 
+bit* p(bit* in){
+    return in;
+}
+
 bit* f(bit* R, bit* K){
     bit* tmp = e(R);
-    bit* sBoxInput exor(48, tmp, K);
-    free tmp;
+    bit* sBoxInput = exor(48, tmp, K);
+    free(tmp);
+
+    tmp = (bit*)calloc(32, sizeof(bit));
+    //przepuść dane przez S-boxy
+    for (int i = 0; i < 8; ++i){
+        bit* out = Sbox(i, sBoxInput+(i*6));
+        for (int j = 0; j < 4; ++j){
+            tmp[i*6+j] = out[j];
+        }
+        free(out);
+    }
+
+
 }

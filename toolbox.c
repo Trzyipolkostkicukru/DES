@@ -39,7 +39,7 @@ bit* permute(uint n, bit* bits, uint m, uint* permutation){
 }
 
 //UWAGA ALOKUJE
-bit* exor(uint n, bit* a, uint* b){
+bit* exor(uint n, bit* a, bit* b){
     //XORuje n bitów z list A i B
     bit* result = (bit*)calloc(n, sizeof(bit));
     for (int i = 0; i < n; ++i){
