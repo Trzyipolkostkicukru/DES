@@ -18,8 +18,19 @@ bit* e(bit* R){
     return permute(32, R, 48, permutation);
 }
 
+//UWAGA ALOKUJE
 bit* p(bit* in){
-    return in;
+    uint permutation[32] = {
+        15, 6, 19, 20,
+        28, 11, 27, 16,
+        0, 14, 22, 25,
+        4, 17, 30, 9,
+        1, 7, 23, 13,
+        31, 26, 2, 8,
+        18, 12, 29, 5,
+        21, 10, 3, 24
+    }
+    return permute(32, in, 32, permutation);
 }
 
 bit* f(bit* R, bit* K){
@@ -36,6 +47,11 @@ bit* f(bit* R, bit* K){
         }
         free(out);
     }
+    free(sBoxInput);
 
+    bit* result;
+    result = e(tmp);
+
+    return result;
 
 }
