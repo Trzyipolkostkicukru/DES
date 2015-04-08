@@ -33,6 +33,7 @@ bit* p(bit* in){
     return permute(32, in, 32, permutation);
 }
 
+//UWAGA ALOKUJE
 bit* f(bit* R, bit* K){
     bit* tmp = e(R);
     bit* sBoxInput = exor(48, tmp, K);
