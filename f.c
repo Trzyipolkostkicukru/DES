@@ -29,7 +29,7 @@ bit* p(bit* in){
         31, 26, 2, 8,
         18, 12, 29, 5,
         21, 10, 3, 24
-    }
+    };
     return permute(32, in, 32, permutation);
 }
 
@@ -51,8 +51,30 @@ bit* f(bit* R, bit* K){
     free(sBoxInput);
 
     bit* result;
-    result = e(tmp);
+    result = p(tmp);
+    free(tmp);
 
     return result;
 
+}
+
+bit* k(int n, bit* key){
+    bit* out = (bit*)calloc(32, sizeof(bit));
+    int PC1a[28] = {
+        56, 48, 40, 32, 24, 16, 8,
+        0, 57, 49, 41, 33, 25, 17,
+        9, 1, 58, 50, 42, 34, 26,
+        18, 10, 2, 59, 51, 43, 35
+    };
+
+    int PC1b[28] = {
+        62, 54, 46, 38, 30, 22, 14,
+        6, 61, 53, 45, 37, 29, 21,
+        13, 5, 60, 52, 44, 36, 28,
+        20, 12, 4, 27, 19, 11, 3
+    };
+
+    bit* C = permute(28, key, 28, PB1a);
+    bit* D = permute(28, key, 28, PB1b);
+    return out;
 }
