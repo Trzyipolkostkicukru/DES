@@ -3,5 +3,5 @@
 
 #include "toolbox.h"
 bit* f(bit* R, bit* K);
-
+bit* k(int n);
 #endif

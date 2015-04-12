@@ -5,6 +5,10 @@
 typedef char bit;
 typedef char byte;
 typedef unsigned int uint;
+typedef struct {
+    bit* L;
+    bit* R;
+} pair;
 #define true 1
 #define false 0
 
