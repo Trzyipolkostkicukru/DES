@@ -1,4 +1,4 @@
-#include <stdio.h>
+w#include <stdio.h>
 #include "toolbox.h"
 #include "sboxy.h"
 #include "f.h"
@@ -12,8 +12,8 @@ void test(){
         // bit* num2bits(uint n, uint num);
         bit* result = num2bits(8, 42);
         bit t[8] = {
-            false, true, false, true,
-            false, true, false, false
+            false, false, true, false,
+            true, false, true, false
         };
         for(int i=0; i<8; i++){
             if(verbose){
@@ -26,8 +26,8 @@ void test(){
 
     {
         bit t[8] = {
-            false, true, false, true,
-            false, true, false, false
+            false, false, true, false,
+            true, false, true, false
         };
         int result = bits2num(8, t);
         if (verbose){
