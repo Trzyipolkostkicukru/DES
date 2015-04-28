@@ -6,7 +6,7 @@ int bits2num(uint n, bit* bits){
     //zmienia tablicę n bitów na liczbę
     uint result = 0;
     for (int i = 0; i < n; ++i){
-        if(bits[i])
+        if(bits[n-i-1])
             result += 1 << i;
     }
     return result;
@@ -17,10 +17,10 @@ bit* num2bits(uint n, uint num){
     //zmienia liczbę na tablicę n bitów
     bit* result;
     result = (bit*)calloc(n, sizeof(bit));
-    int i = 0;
+    int i = 1;
     while(num){
         if(num % 2){
-            result[i] = true;
+            result[n-i] = true;
         }
         i++;
         num >>= 1;
@@ -47,3 +47,118 @@ bit* exor(uint n, bit* a, bit* b){
     }
     return result;
 }
+
+// char* bits2hex(uint n, bit* bits){
+//     char* out = (char*)calloc(n/4, sizeof(char));
+
+//     for (int i = 0; i < n; i=i+4){
+//         num = bits2num(4, bits[i]);
+
+//     }
+// }
+
+//UWAGA ALOKUJE
+bit* hex2bits(uint n, char* hex){
+    bit* out = (bit*)calloc(n*4, sizeof(bit));
+    for (int i = 0; i < n; ++i){
+        switch(hex[i]){
+            case '0':
+                out[i*4]   = 0;
+                out[i*4+1] = 0;
+                out[i*4+2] = 0;
+                out[i*4+3] = 0;
+                break;
+            case '1':
+                out[i*4]   = 0;
+                out[i*4+1] = 0;
+                out[i*4+2] = 0;
+                out[i*4+3] = 1;
+                break;
+            case '2':
+                out[i*4]   = 0;
+                out[i*4+1] = 0;
+                out[i*4+2] = 1;
+                out[i*4+3] = 0;
+                break;
+            case '3':
+                out[i*4]   = 0;
+                out[i*4+1] = 0;
+                out[i*4+2] = 1;
+                out[i*4+3] = 1;
+                break;
+            case '4':
+                out[i*4]   = 0;
+                out[i*4+1] = 1;
+                out[i*4+2] = 0;
+                out[i*4+3] = 0;
+                break;
+            case '5':
+                out[i*4]   = 0;
+                out[i*4+1] = 1;
+                out[i*4+2] = 0;
+                out[i*4+3] = 1;
+                break;
+            case '6':
+                out[i*4]   = 0;
+                out[i*4+1] = 1;
+                out[i*4+2] = 1;
+                out[i*4+3] = 0;
+                break;
+            case '7':
+                out[i*4]   = 0;
+                out[i*4+1] = 1;
+                out[i*4+2] = 1;
+                out[i*4+3] = 1;
+                break;
+            case '8':
+                out[i*4]   = 1;
+                out[i*4+1] = 0;
+                out[i*4+2] = 0;
+                out[i*4+3] = 0;
+                break;
+            case '9':
+                out[i*4]   = 1;
+                out[i*4+1] = 0;
+                out[i*4+2] = 0;
+                out[i*4+3] = 1;
+                break;
+            case 'A':
+                out[i*4]   = 1;
+                out[i*4+1] = 0;
+                out[i*4+2] = 1;
+                out[i*4+3] = 0;
+                break;
+            case 'B':
+                out[i*4]   = 1;
+                out[i*4+1] = 0;
+                out[i*4+2] = 1;
+                out[i*4+3] = 1;
+                break;
+            case 'C':
+                out[i*4]   = 1;
+                out[i*4+1] = 1;
+                out[i*4+2] = 0;
+                out[i*4+3] = 0;
+                break;
+            case 'D':
+                out[i*4]   = 1;
+                out[i*4+1] = 1;
+                out[i*4+2] = 0;
+                out[i*4+3] = 1;
+                break;
+            case 'E':
+                out[i*4]   = 1;
+                out[i*4+1] = 1;
+                out[i*4+2] = 1;
+                out[i*4+3] = 0;
+                break;
+            case 'F':
+                out[i*4]   = 1;
+                out[i*4+1] = 1;
+                out[i*4+2] = 1;
+                out[i*4+3] = 1;
+                break;
+        }
+    }
+    return out;
+};

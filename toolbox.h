@@ -15,6 +15,9 @@ typedef struct {
 
 int bits2num(uint n, bit* bits);
 bit* num2bits(uint n, uint num);
+
+bit* hex2bits(uint n, char* hex);
+
 bit* permute(uint n, bit* bits, uint m, uint* permutation);
 bit* exor(uint n, bit* a, bit* b);
 
