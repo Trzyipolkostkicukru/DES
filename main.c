@@ -271,6 +271,28 @@ bit* decryptBlock(bit* input){
     return out;
 }
 
+char** readFile(char* filename){
+    FILE *fp = fopen(filename, "r");
+    int blocks = 0;
+    int tail = 0;
+    char** output = (char**)calloc(2560, sizeof(char*));
+    do{
+        blocks++;
+        output[blocks] = (char*)calloc(20, sizeof(char));
+        tail = fread(output[blocks], 1, 16, fp);
+        output[blocks][16] = '\0';
+    } while(tail == 16);
+    fclose(fp);
+    output[0] = (char*)calloc(20, sizeof(char));
+    output[0][0] = tail; //długość ostatniego bloku
+    output[0][1] = (blocks >> 24) & 0xFF; //ilość bloków zapisana w 4 bajtach
+    output[0][2] = (blocks >> 16) & 0xFF;
+    output[0][3] = (blocks >> 8) & 0xFF;
+    output[0][4] = blocks & 0xFF;
+    return output;
+}
+//size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
+
 int main(int argc, char const *argv[]){
     // bit* bity;
     // bity = num2bits(64, 41);
@@ -278,12 +300,17 @@ int main(int argc, char const *argv[]){
     // int test = bits2num(64, bity);
     // printf("cokolwiek, %d\n", test);
     // test();
-    bit* bits = hex2bits(16, "85E813540F0AB405");
-    printf("ZZZ\n");
-    bits = decryptBlock(bits);
-    printbits(hex2bits(16, "0123456789ABCDEF"));
-    printf("\n");
-    printbits(bits);
+    // bit* bits = hex2bits(16, "85E813540F0AB405");
+    // printf("ZZZ\n");
+    // bits = decryptBlock(bits);
+    // printbits(hex2bits(16, "0123456789ABCDEF"));
+    // printf("\n");
+    // printbits(bits);
+    char** text = readFile("./main.c");
+    printf("%u, %u, %u, %u, %u\n", text[0][0], text[0][1], text[0][2], text[0][3], text[0][4]);
+    for (int i = 1; i < 20; ++i){
+        printf("%s\n", text[i]);
+    }
 
     return 0;
 }
