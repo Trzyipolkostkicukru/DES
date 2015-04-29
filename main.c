@@ -3,7 +3,7 @@
 #include "sboxy.h"
 #include "f.h"
 #include <assert.h>
-
+#include <string.h>
 
 //TESTY
 void test(){
@@ -278,12 +278,12 @@ char** readFile(char* filename){
     char** output = (char**)calloc(2560, sizeof(char*));
     do{
         blocks++;
-        output[blocks] = (char*)calloc(20, sizeof(char));
-        tail = fread(output[blocks], 1, 16, fp);
-        output[blocks][16] = '\0';
-    } while(tail == 16);
+        output[blocks] = (char*)calloc(9, sizeof(char));
+        tail = fread(output[blocks], 1, 8, fp);
+        output[blocks][8] = '\0';
+    } while(tail == 8);
     fclose(fp);
-    output[0] = (char*)calloc(20, sizeof(char));
+    output[0] = (char*)calloc(8, sizeof(char));
     output[0][0] = tail; //długość ostatniego bloku
     output[0][1] = (blocks >> 24) & 0xFF; //ilość bloków zapisana w 4 bajtach
     output[0][2] = (blocks >> 16) & 0xFF;
@@ -293,6 +293,79 @@ char** readFile(char* filename){
 }
 //size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
 
+void encryptFile(char* filename){
+    //SKOPIOWANE Z READFILE
+    FILE *fp = fopen(filename, "rb");
+    int blocks = 0;
+    int tail = 0;
+    char** output = (char**)calloc(2560, sizeof(char*));
+    do{
+        blocks++;
+        output[blocks] = (char*)calloc(9, sizeof(char));
+        tail = fread(output[blocks], 1, 8, fp);
+        output[blocks][8] = '\0';
+    } while(tail == 8);
+    fclose(fp);
+    output[0] = (char*)calloc(8, sizeof(char));
+    output[0][0] = tail; //długość ostatniego bloku
+    output[0][1] = (blocks >> 24) & 0xFF; //ilość bloków zapisana w 4 bajtach
+    output[0][2] = (blocks >> 16) & 0xFF;
+    output[0][3] = (blocks >> 8) & 0xFF;
+    output[0][4] = blocks & 0xFF;
+    //KONIEC SKOPIOWANEGO
+
+    char fn[200];
+    strcpy(fn, filename);
+    strcat(fn, ".encrypted");
+    fp = fopen(fn, "wb");
+    for (int i = 0; i < blocks; ++i){
+        bit* encrypted = encryptBlock(chars2block(output[i]));
+        char* enc = block2chars(encrypted);
+        fwrite(enc, 8, 1, fp);
+    }
+    fclose(fp);
+    printf("tail to %d\n", tail);
+    printf("blocks to %d\n", blocks);
+}
+
+void decryptFile(char* filename){
+    FILE *fp = fopen(filename, "rb");
+    unsigned int blocks = 0;
+    unsigned int tail = 0;
+    unsigned char** output = (unsigned char**)calloc(2560, sizeof(char*));
+    do{
+        output[blocks] = (char*)calloc(9, sizeof(char));
+        tail = fread(output[blocks], 8, 1, fp);
+        output[blocks][8] = '\0';
+        // printf("out block%u\n", (unsigned char)output[blocks][0]);
+        blocks++;
+    } while(tail);
+    fclose(fp);
+
+    // printf("%s\n", output[0]);
+    bit* block = chars2block(output[0]);
+    bit* decrypted = decryptBlock(block);
+    char* dec = block2chars(decrypted);
+    tail = dec[0];
+    blocks = dec[4];
+    blocks += ((unsigned int)dec[3]) << 8;
+    blocks += ((unsigned int)dec[2]) << 16;
+    blocks += ((unsigned int)dec[1]) << 24;
+    printf("bb = %d\n", blocks);
+    for (int i = 1; i < blocks+1; ++i){
+        bit* block = chars2block(output[i]);
+        bit* decrypted = decryptBlock(block);
+        char* dec = block2chars(decrypted);
+        for (int j = 0; j < 8; ++j){
+            printf("%c", dec[j]);
+        }
+    }
+
+
+
+    // printf("%s\n", dec);
+    return;
+}
 int main(int argc, char const *argv[]){
     // bit* bity;
     // bity = num2bits(64, 41);
@@ -306,12 +379,14 @@ int main(int argc, char const *argv[]){
     // printbits(hex2bits(16, "0123456789ABCDEF"));
     // printf("\n");
     // printbits(bits);
-    char** text = readFile("./main.c");
-    printf("%u, %u, %u, %u, %u\n", text[0][0], text[0][1], text[0][2], text[0][3], text[0][4]);
-    for (int i = 1; i < 20; ++i){
-        printf("%s\n", text[i]);
-    }
-
+    // char** text = readFile("./main.c");
+    // printf("%u, %u, %u, %u, %u\n", text[0][0], text[0][1], text[0][2], text[0][3], text[0][4]);
+    // for (int i = 1; i < 20; ++i){
+    //     printf("%s\n", block2chars(chars2block(text[i])));
+    // }
+    encryptFile("./plik");
+    printf("zzz\n");
+    decryptFile("./plik.encrypted");
     return 0;
 }
 

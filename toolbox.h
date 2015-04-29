@@ -21,4 +21,6 @@ bit* hex2bits(uint n, char* hex);
 bit* permute(uint n, bit* bits, uint m, uint* permutation);
 bit* exor(uint n, bit* a, bit* b);
 
+bit* chars2block(char* in);
+char* block2chars(bit* in);
 #endif

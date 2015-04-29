@@ -27,6 +27,20 @@ bit* num2bits(uint n, uint num){
     }
     return result;
 }
+bit* char2bits(uint n, unsigned char num){
+    //zmienia liczbę na tablicę n bitów
+    bit* result;
+    result = (bit*)calloc(n, sizeof(bit));
+    int i = 1;
+    while(num){
+        if(num % 2){
+            result[n-i] = true;
+        }
+        i++;
+        num >>= 1;
+    }
+    return result;
+}
 
 //UWAGA ALOKUJE
 bit* permute(uint n, bit* bits, uint m, uint* permutation){
@@ -162,3 +176,22 @@ bit* hex2bits(uint n, char* hex){
     }
     return out;
 };
+
+bit* chars2block(char* in){
+    bit* out = (bit*)calloc(64, sizeof(bit));
+    for (int i = 0; i < 8; ++i){
+        bit* num = char2bits(8, (unsigned int)in[i]);
+        for (int j = 0; j < 8; ++j){
+            out[i*8+j] = num[j];
+        }
+    }
+    return out;
+}
+
+char* block2chars(bit* in){
+    char* out = (char*)calloc(8, sizeof(char));
+    for (int i = 0; i < 8; ++i){
+        out[i] = bits2num(8, &in[i*8]);
+    }
+    return out;
+}
