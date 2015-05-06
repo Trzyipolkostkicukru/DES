@@ -291,12 +291,11 @@ char** readFile(char* filename){
     output[0][4] = blocks & 0xFF;
     return output;
 }
-//size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream)
+
 
 void encryptFile(char* filename){
     //SKOPIOWANE Z READFILE
     FILE *fp = fopen(filename, "rb");
-            // printf("fp: %d\n", *fp);
     unsigned int blocks = 0;
     int tail = 0;
     char** output = (char**)calloc(2000000, sizeof(char*));
@@ -305,14 +304,8 @@ void encryptFile(char* filename){
         output[blocks] = (char*)calloc(9, sizeof(char));
         tail = fread(output[blocks], 1, 8, fp);
         output[blocks][8] = '\0';
-        // if (tail != 9){
-        //     for (int i = 0; i < 8; ++i){
-        //         printf("[]%c\n", output[blocks][i]);
-        //     }
-        // } printf("\n");
 
     } while(tail == 8);
-    // printf("fp: %d\n", *fp);
     fclose(fp);
     output[0] = (char*)calloc(8, sizeof(char));
     output[0][0] = tail; //długość ostatniego bloku
@@ -349,8 +342,6 @@ void decryptFile(char* filename){
         output[blocks] = (char*)calloc(9, sizeof(char));
         tail = fread(output[blocks], 8, 1, fp);
         output[blocks][8] = '\0';
-        // printf("out block%u\n", (unsigned char)output[blocks][0]);
-
         blocks++;
     } while(tail);
     fclose(fp);
@@ -359,7 +350,6 @@ void decryptFile(char* filename){
     strcpy(fn, filename);
     strcat(fn, ".decrypted");
     fp = fopen(fn, "wb");
-    // printf("%s\n", output[0]);
     bit* block = chars2block(output[0]);
     bit* decrypted = decryptBlock(block);
     unsigned char* dec = block2chars(decrypted);
@@ -369,55 +359,23 @@ void decryptFile(char* filename){
     blocks += ((unsigned int)dec[2]) << 16;
     blocks += ((unsigned int)dec[1]) << 24;
 
-
-
     printf("bb = %d\n", blocks);
     for (int i = 1; i < blocks; ++i){
         bit* block = chars2block(output[i]);
         bit* decrypted = decryptBlock(block);
         char* dec = block2chars(decrypted);
         fwrite(dec, 8, 1, fp);
-        // for (int j = 0; j < 8; ++j){
-        //     printf("{}%c\n", dec[j]);
-
-        // }
-        // printf("\n");
     }
     {
         bit* block = chars2block(output[blocks]);
         bit* decrypted = decryptBlock(block);
         char* dec = block2chars(decrypted);
         fwrite(dec, tail, 1, fp);
-        // for (int j = 0; j < tail; ++j){
-        //     printf("[]%c \n", dec[j]);
-        // }
     }
-
-
-
-    // printf("%s\n", dec);
     return;
 }
 int main(int argc, char **argv){
-    // bit* bity;
-    // bity = num2bits(64, 41);
-    // bity = encryptBlock(bity);
-    // int test = bits2num(64, bity);
-    // printf("cokolwiek, %d\n", test);
-    // test();
-    // bit* bits = hex2bits(16, "85E813540F0AB405");
-    // printf("ZZZ\n");
-    // bits = decryptBlock(bits);
-    // printbits(hex2bits(16, "0123456789ABCDEF"));
-    // printf("\n");
-    // printbits(bits);
-    // char** text = readFile("./main.c");
-    // printf("%u, %u, %u, %u, %u\n", text[0][0], text[0][1], text[0][2], text[0][3], text[0][4]);
-    // for (int i = 1; i < 20; ++i){
-    //     printf("%s\n", block2chars(chars2block(text[i])));
-    // }
     encryptFile(argv[1]);
-    printf("zzz\n");
     decryptFile(argv[2]);
     return 0;
 }
