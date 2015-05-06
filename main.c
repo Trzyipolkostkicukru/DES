@@ -296,15 +296,23 @@ char** readFile(char* filename){
 void encryptFile(char* filename){
     //SKOPIOWANE Z READFILE
     FILE *fp = fopen(filename, "rb");
-    int blocks = 0;
+            // printf("fp: %d\n", *fp);
+    unsigned int blocks = 0;
     int tail = 0;
-    char** output = (char**)calloc(2560, sizeof(char*));
+    char** output = (char**)calloc(2000000, sizeof(char*));
     do{
         blocks++;
         output[blocks] = (char*)calloc(9, sizeof(char));
         tail = fread(output[blocks], 1, 8, fp);
         output[blocks][8] = '\0';
+        // if (tail != 9){
+        //     for (int i = 0; i < 8; ++i){
+        //         printf("[]%c\n", output[blocks][i]);
+        //     }
+        // } printf("\n");
+
     } while(tail == 8);
+    // printf("fp: %d\n", *fp);
     fclose(fp);
     output[0] = (char*)calloc(8, sizeof(char));
     output[0][0] = tail; //długość ostatniego bloku
@@ -318,7 +326,7 @@ void encryptFile(char* filename){
     strcpy(fn, filename);
     strcat(fn, ".encrypted");
     fp = fopen(fn, "wb");
-    for (int i = 0; i < blocks; ++i){
+    for (int i = 0; i < blocks+1; ++i){
         bit* encrypted = encryptBlock(chars2block(output[i]));
         char* enc = block2chars(encrypted);
         fwrite(enc, 8, 1, fp);
@@ -326,39 +334,63 @@ void encryptFile(char* filename){
     fclose(fp);
     printf("tail to %d\n", tail);
     printf("blocks to %d\n", blocks);
+    for (int i = 0; i < 2000000; ++i){
+        free(output[i]);
+    }
+    free(output);
 }
 
 void decryptFile(char* filename){
     FILE *fp = fopen(filename, "rb");
     unsigned int blocks = 0;
     unsigned int tail = 0;
-    unsigned char** output = (unsigned char**)calloc(2560, sizeof(char*));
+    unsigned char** output = (unsigned char**)calloc(2000000, sizeof(char*));
     do{
         output[blocks] = (char*)calloc(9, sizeof(char));
         tail = fread(output[blocks], 8, 1, fp);
         output[blocks][8] = '\0';
         // printf("out block%u\n", (unsigned char)output[blocks][0]);
+
         blocks++;
     } while(tail);
     fclose(fp);
 
+    char fn[200];
+    strcpy(fn, filename);
+    strcat(fn, ".decrypted");
+    fp = fopen(fn, "wb");
     // printf("%s\n", output[0]);
     bit* block = chars2block(output[0]);
     bit* decrypted = decryptBlock(block);
-    char* dec = block2chars(decrypted);
+    unsigned char* dec = block2chars(decrypted);
     tail = dec[0];
     blocks = dec[4];
     blocks += ((unsigned int)dec[3]) << 8;
     blocks += ((unsigned int)dec[2]) << 16;
     blocks += ((unsigned int)dec[1]) << 24;
+
+
+
     printf("bb = %d\n", blocks);
-    for (int i = 1; i < blocks+1; ++i){
+    for (int i = 1; i < blocks; ++i){
         bit* block = chars2block(output[i]);
         bit* decrypted = decryptBlock(block);
         char* dec = block2chars(decrypted);
-        for (int j = 0; j < 8; ++j){
-            printf("%c", dec[j]);
-        }
+        fwrite(dec, 8, 1, fp);
+        // for (int j = 0; j < 8; ++j){
+        //     printf("{}%c\n", dec[j]);
+
+        // }
+        // printf("\n");
+    }
+    {
+        bit* block = chars2block(output[blocks]);
+        bit* decrypted = decryptBlock(block);
+        char* dec = block2chars(decrypted);
+        fwrite(dec, tail, 1, fp);
+        // for (int j = 0; j < tail; ++j){
+        //     printf("[]%c \n", dec[j]);
+        // }
     }
 
 
@@ -366,7 +398,7 @@ void decryptFile(char* filename){
     // printf("%s\n", dec);
     return;
 }
-int main(int argc, char const *argv[]){
+int main(int argc, char **argv){
     // bit* bity;
     // bity = num2bits(64, 41);
     // bity = encryptBlock(bity);
@@ -384,9 +416,9 @@ int main(int argc, char const *argv[]){
     // for (int i = 1; i < 20; ++i){
     //     printf("%s\n", block2chars(chars2block(text[i])));
     // }
-    encryptFile("./plik");
+    encryptFile(argv[1]);
     printf("zzz\n");
-    decryptFile("./plik.encrypted");
+    decryptFile(argv[2]);
     return 0;
 }
 

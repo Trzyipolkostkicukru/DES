@@ -191,7 +191,7 @@ bit* chars2block(char* in){
 char* block2chars(bit* in){
     char* out = (char*)calloc(8, sizeof(char));
     for (int i = 0; i < 8; ++i){
-        out[i] = bits2num(8, &in[i*8]);
+        out[i] = bits2num(8, in+(i*8));
     }
     return out;
 }
